@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Зерттеуді жоспарлау — 5-сынып</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#4E8FEA;
+  --blue-dark:#2E6FD1;
+  --green:#4FD69C;
+  --yellow:#FFC94A;
+  --purple:#A78BFA;
+  --coral:#FF8B6A;
+  --bg:#F1F9FF;
+  --card:#FFFFFF;
+  --ink:#1E2A3A;
+  --ink-soft:#5A6B80;
+  --danger:#FF6B6B;
+  --danger-bg:#FFECEC;
+  --ok:#38C793;
+  --ok-bg:#E7FBF3;
+  --radius:26px;
+  --radius-sm:16px;
+  --shadow:0 10px 30px rgba(46,111,209,0.12);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  font-family:'Nunito',sans-serif;
+  background:linear-gradient(180deg,#F1F9FF 0%,#E8F4FF 100%);
+  color:var(--ink);
+  overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+#app{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+}
+.slide{
+  position:absolute;
+  inset:0;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:70px 6vw 90px;
+  text-align:center;
+  overflow-y:auto;
+}
+.slide.active{
+  display:flex;
+  animation:fadeIn .45s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+@keyframes popIn{0%{transform:scale(0);opacity:0;}70%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+
+h1.slide-title{
+  font-family:'Manrope',sans-serif;
+  font-weight:800;
+  font-size:clamp(28px,4vw,52px);
+  margin:0 0 6px;
+  color:var(--ink);
+}
+p.slide-sub{
+  font-size:clamp(16px,1.6vw,22px);
+  color:var(--ink-soft);
+  font-weight:700;
+  margin:0 0 26px;
+}
+.emoji-huge{font-size:clamp(50px,7vw,90px); line-height:1; margin-bottom:6px;}
+
+.btn{
+  font-family:'Nunito',sans-serif;
+  font-weight:800;
+  font-size:19px;
+  border:none;
+  border-radius:100px;
+  padding:16px 34px;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--blue-dark));
+  box-shadow:0 8px 20px rgba(46,111,209,.28);
+  transition:transform .15s ease, box-shadow .15s ease;
+  touch-action:manipulation;
+}
+.btn:active{transform:scale(.95);}
+.btn:hover{transform:translateY(-2px);}
+.btn.green{background:linear-gradient(135deg,#5FE3AC,#2FBE87);}
+.btn.yellow{background:linear-gradient(135deg,#FFD873,#F0A93A); color:#5A3E00;}
+.btn.coral{background:linear-gradient(135deg,#FFA286,#F26A45);}
+.btn.purple{background:linear-gradient(135deg,#C3AEFF,#8B6EF0);}
+.btn.ghost{background:#fff;color:var(--blue-dark);border:2px solid #D7E9FF;box-shadow:none;}
+.btn.small{padding:9px 18px; font-size:15px; border-radius:100px;}
+.btn:disabled{opacity:.4; cursor:not-allowed; transform:none;}
+
+.cards-row{display:flex; gap:26px; flex-wrap:wrap; justify-content:center; margin:10px 0;}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:28px 26px;
+  min-width:190px;
+  animation:scaleIn .4s ease;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.card:hover{transform:translateY(-6px); box-shadow:0 16px 34px rgba(46,111,209,.18);}
+.card .icon{font-size:44px; margin-bottom:10px;}
+.card .label{font-weight:800; font-size:18px;}
+
+/* Navigation */
+.nav-arrow{
+  position:fixed; top:50%; transform:translateY(-50%);
+  width:58px; height:58px; border-radius:50%;
+  background:#fff; box-shadow:var(--shadow);
+  border:none; font-size:24px; color:var(--blue-dark);
+  cursor:pointer; z-index:500; display:flex; align-items:center; justify-content:center;
+  transition:transform .15s;
+}
+.nav-arrow:hover{transform:translateY(-50%) scale(1.08);}
+.nav-arrow:active{transform:translateY(-50%) scale(.92);}
+#prevBtn{left:18px;}
+#nextBtn{right:18px;}
+
+.bottom-bar{
+  position:fixed; left:0; right:0; bottom:0;
+  padding:12px 24px 16px;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  z-index:400;
+  background:linear-gradient(0deg, rgba(241,249,255,.95), rgba(241,249,255,0));
+}
+.progress-track{
+  width:min(500px,60vw); height:8px; background:#DCEBFB; border-radius:10px; overflow:hidden;
+}
+.progress-fill{height:100%; background:linear-gradient(90deg,var(--blue),var(--green)); border-radius:10px; transition:width .3s ease;}
+.slide-counter{font-weight:800; color:var(--ink-soft); font-size:14px;}
+
+/* Toolbar */
+.toolbar{
+  position:fixed; top:16px; right:18px; display:flex; gap:10px; z-index:600;
+}
+.tool-btn{
+  width:48px; height:48px; border-radius:50%; border:none;
+  background:#fff; box-shadow:var(--shadow); font-size:20px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.tool-btn:active{transform:scale(.92);}
+
+/* modal */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(20,35,55,.45);
+  display:none; align-items:center; justify-content:center; z-index:1000; padding:20px;
+}
+.modal-overlay.show{display:flex; animation:fadeIn .25s ease;}
+.modal-box{
+  background:#fff; border-radius:28px; padding:34px 30px; max-width:560px; width:100%;
+  box-shadow:0 24px 60px rgba(0,0,0,.25); text-align:center; animation:popIn .3s ease;
+  max-height:85vh; overflow-y:auto;
+}
+.modal-box h2{margin-top:0; font-family:'Manrope',sans-serif;}
+.modal-actions{display:flex; gap:12px; justify-content:center; margin-top:18px; flex-wrap:wrap;}
+
+/* teams */
+.team-card{
+  background:#fff; border-radius:var(--radius); padding:22px 20px; box-shadow:var(--shadow);
+  min-width:170px; position:relative;
+}
+.team-card .icon{font-size:40px;}
+.team-card .name{font-weight:800; margin:6px 0;}
+.team-card .score{font-size:22px; font-weight:900; color:var(--blue-dark); margin:8px 0;}
+.score-btns{display:flex; gap:8px; justify-content:center;}
+.score-btns button{width:38px;height:38px;border-radius:50%;border:none;font-weight:900;font-size:18px;cursor:pointer;}
+.score-btns .plus{background:var(--ok-bg); color:var(--ok);}
+.score-btns .minus{background:var(--danger-bg); color:var(--danger);}
+
+/* feedback banners */
+.feedback{
+  margin-top:16px; padding:14px 22px; border-radius:100px; font-weight:800; display:inline-block;
+  animation:popIn .3s ease;
+}
+.feedback.correct{background:var(--ok-bg); color:#1D8A63;}
+.feedback.wrong{background:var(--danger-bg); color:#C94040;}
+
+/* timeline */
+.timeline{display:flex; flex-direction:column; gap:0; align-items:flex-start; max-width:520px; margin:0 auto;}
+.timeline .step{
+  display:flex; align-items:center; gap:16px; background:#fff; border-radius:18px; padding:14px 20px;
+  box-shadow:var(--shadow); opacity:0; transform:translateY(14px); transition:all .4s ease; width:100%;
+}
+.timeline .step.show{opacity:1; transform:translateY(0);}
+.timeline .step .num{width:36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.timeline .arrow{color:var(--blue); font-size:20px; margin:2px 0;}
+
+/* order/drag list */
+.order-list{display:flex; flex-direction:column; gap:10px; max-width:420px; margin:14px auto;}
+.order-item{
+  background:#fff; border-radius:16px; padding:14px 18px; font-weight:800; box-shadow:var(--shadow);
+  cursor:grab; border:3px solid transparent; display:flex; align-items:center; gap:10px;
+}
+.order-item.selected{border-color:var(--blue);}
+.order-item .dot{width:10px;height:10px;border-radius:50%;background:var(--purple);flex-shrink:0;}
+
+/* video */
+.video-wrap{
+  width:min(760px,84vw); aspect-ratio:16/9; background:#0B1B2B; border-radius:24px; overflow:hidden;
+  box-shadow:var(--shadow); display:flex; align-items:center; justify-content:center;
+}
+.video-wrap video{width:100%; height:100%; object-fit:contain; background:#000;}
+.video-missing{color:#9FC4EA; font-weight:800;}
+
+/* lab cards */
+.lab-card{cursor:pointer; transition:transform .25s ease, box-shadow .25s ease;}
+.lab-card.active{transform:scale(1.06); box-shadow:0 20px 40px rgba(46,111,209,.25); border:3px solid var(--blue);}
+
+/* timer display */
+.big-timer{font-family:'Manrope',sans-serif; font-size:clamp(48px,8vw,88px); font-weight:900; color:var(--blue-dark); margin:10px 0;}
+
+/* safe/danger */
+.judge-icon{font-size:70px; margin:8px 0;}
+
+/* jeopardy */
+.board{display:grid; grid-template-columns:repeat(5,1fr); gap:10px; max-width:900px; width:92vw; margin:0 auto;}
+.board .cat-head{background:var(--blue-dark); color:#fff; font-weight:900; border-radius:12px 12px 0 0; padding:12px 4px; font-size:clamp(11px,1.3vw,16px);}
+.board .val-cell{
+  background:#fff; border-radius:12px; padding:16px 4px; font-weight:900; font-size:clamp(16px,2vw,26px);
+  color:var(--blue-dark); box-shadow:var(--shadow); cursor:pointer; margin-top:8px;
+}
+.board .val-cell.used{background:#E4EAF2; color:#B7C2D0; cursor:default; box-shadow:none;}
+.jeop-modal .prompt{font-size:20px; font-weight:700; white-space:pre-line; margin:14px 0;}
+.jeop-modal .answer{font-size:19px; font-weight:800; color:var(--blue-dark); background:#EAF3FF; border-radius:16px; padding:14px; margin-top:10px; display:none; white-space:pre-line;}
+.jeop-modal .answer.show{display:block;}
+.team-pick{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:12px;}
+
+/* confetti */
+.confetti-piece{position:fixed; top:-20px; z-index:1200; border-radius:2px; pointer-events:none;}
+
+/* checklist */
+.checklist{max-width:420px; margin:0 auto; text-align:left;}
+.checklist label{display:flex; align-items:center; gap:12px; background:#fff; border-radius:14px; padding:12px 16px; margin-bottom:10px; box-shadow:var(--shadow); font-weight:700; cursor:pointer;}
+.checklist input{width:22px; height:22px;}
+
+.traffic-count{
+  margin-top:10px; font-weight:900; font-size:18px; color:var(--blue-dark);
+  background:#EAF3FF; border-radius:100px; padding:6px 14px; display:inline-block;
+}
+
+/* winner */
+.winner-card{transform:scale(1.15); border:4px solid var(--yellow); box-shadow:0 20px 50px rgba(255,201,74,.4);}
+
+/* fullscreen adapt */
+:fullscreen #app{width:100vw; height:100vh;}
+
+@media(max-width:700px){
+  .nav-arrow{width:46px;height:46px;font-size:18px;}
+  .board{grid-template-columns:repeat(5,1fr); gap:6px;}
+  .card{min-width:140px; padding:18px 14px;}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+<div class="toolbar">
+  <button class="tool-btn" id="fsBtn" title="Толық экран">⛶</button>
+  <button class="tool-btn" id="timerToolBtn" title="Таймер">⏱</button>
+  <button class="tool-btn" id="scoreToolBtn" title="Ұпайлар">⭐</button>
+  <button class="tool-btn" id="rateToolBtn" title="Топтарды бағалау">🏅</button>
+  <button class="tool-btn" id="resetToolBtn" title="Тазалау">🔄</button>
+</div>
+
+<!-- SLIDE 1 -->
+<section class="slide" data-slide>
+  <div class="emoji-huge">🔬</div>
+  <h1 class="slide-title">«ЗЕРТТЕУДІ ЖОСПАРЛАУ»</h1>
+  <p class="slide-sub">Жаратылыстану · 5-сынып</p>
+  <p style="font-weight:700;font-size:20px;color:var(--ink-soft);margin-bottom:26px;">«Бүгін біз жас зерттеушілерге айналамыз!»</p>
+  <div style="font-size:44px; margin-bottom:22px;">🧪 🔍 🌱 💡</div>
+  <button class="btn go-next">Сабақты бастау →</button>
+</section>
+
+<!-- SLIDE 2 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">🎯 Бүгінгі зерттеу миссиясы</h1>
+  <div class="cards-row">
+    <div class="card"><div class="icon">🔍</div><div class="label">Зерттеу жоспарын құрастырамыз</div></div>
+    <div class="card"><div class="icon">⚠️</div><div class="label">Қауіпсіздік ережелерін анықтаймыз</div></div>
+  </div>
+  <p style="margin-top:26px;font-weight:800;font-size:19px;">🏆 Сабақ соңында ең мықты зерттеушілер тобын анықтаймыз!</p>
+</section>
+
+<!-- SLIDE 3 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">Өз зертханаңды таңда!</h1>
+  <div class="cards-row" id="teamsGrid"></div>
+  <button class="btn ghost" style="margin-top:22px;" id="clearScoresBtn">Ұпайларды тазалау</button>
+</section>
+
+<!-- SLIDE 4 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">🕵️ ҚҰПИЯ ТӘЖІРИБЕ</h1>
+  <div style="display:flex; gap:40px; align-items:center; justify-content:center; margin:18px 0; flex-wrap:wrap;">
+    <div class="card"><div class="icon">♨️</div><div class="label">ЖЫЛЫ СУ</div></div>
+    <div class="emoji-huge" style="font-size:44px;">🍬</div>
+    <div class="card"><div class="icon">❄️</div><div class="label">САЛҚЫН СУ</div></div>
+  </div>
+  <p style="font-weight:800;font-size:22px;">Қант қай суда тезірек ериді?</p>
+  <div style="display:flex; gap:20px; justify-content:center; margin-top:14px; flex-wrap:wrap;">
+    <button class="btn" id="guessWarm">♨️ Жылы суда</button>
+    <button class="btn" id="guessCold">❄️ Салқын суда</button>
+  </div>
+  <div id="guessFeedback"></div>
+</section>
+
+<!-- SLIDE 5 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">Оны қалай дәлелдей аламыз?</h1>
+  <p style="font-weight:800;font-size:22px;">🧪 Тәжірибе жасау керек!</p>
+  <p id="s5think" style="opacity:0; transition:opacity .5s ease; font-weight:700; font-size:19px; color:var(--ink-soft);">Бірақ... тәжірибені бірден бастаймыз ба? 🤔</p>
+  <button class="btn coral" id="s5videoBtn" style="margin-top:16px;">Видеодан анықтайық! ▶</button>
+</section>
+
+<!-- SLIDE 6 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">🎬 Видеоны мұқият көр!</h1>
+  <div class="cards-row" style="margin-bottom:18px;">
+    <div class="card"><div class="icon">1️⃣</div><div class="label">Зерттеу неден басталады?</div></div>
+    <div class="card"><div class="icon">2️⃣</div><div class="label">Зерттеу қандай кезеңдерден тұрады?</div></div>
+    <div class="card"><div class="icon">3️⃣</div><div class="label">Қандай қауіпсіздік ережелерін байқадың?</div></div>
+  </div>
+  <p style="font-weight:800; margin-bottom:12px;">👀 Осы 3 сұрақтың жауабын видеодан тап!</p>
+  <div class="video-wrap">
+    <video id="researchVideo" controls>
+      <source src="research-video.mp4" type="video/mp4">
+    </video>
+  </div>
+</section>
+
+<!-- SLIDE 7 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">🔬 Зерттеушінің алгоритмі</h1>
+  <div class="timeline" id="timelineList">
+    <div class="step" data-num="1"><div class="num">1</div><div>❓ Зерттеу сұрағы</div></div>
+    <div class="step" data-num="2"><div class="num">2</div><div>💭 Болжам</div></div>
+    <div class="step" data-num="3"><div class="num">3</div><div>🧪 Қажетті құралдар</div></div>
+    <div class="step" data-num="4"><div class="num">4</div><div>📝 Зерттеу жоспары</div></div>
+    <div class="step" data-num="5"><div class="num">5</div><div>⚠️ Қауіпсіздік</div></div>
+    <div class="step" data-num="6"><div class="num">6</div><div>📊 Нәтиже</div></div>
+    <div class="step" data-num="7"><div class="num">7</div><div>✅ Қорытынды</div></div>
+  </div>
+  <button class="btn" id="timelineNextBtn" style="margin-top:18px;">Келесі қадам</button>
+</section>
+
+<!-- SLIDE 8 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">🧩 РЕТІН ТАП!</h1>
+  <p class="slide-sub">Зерттеу кезеңдерін дұрыс ретпен орналастыр.</p>
+  <p style="font-size:14px;color:var(--ink-soft);font-weight:700;">Карточканы басып таңдап, орнын ауыстыратын карточканы бас (немесе тартып апар).</p>
+  <div class="order-list" id="orderList1"></div>
+  <div style="display:flex; gap:14px; margin-top:10px;">
+    <button class="btn green" id="checkOrder1">Тексеру</button>
+    <button class="btn ghost" id="resetOrder1">Қайта бастау</button>
+  </div>
+  <div id="orderFeedback1"></div>
+</section>
+
+<!-- SLIDE 9 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">🔬 ЗЕРТТЕУШІЛЕР ЗЕРТХАНАСЫ</h1>
+  <div class="cards-row" id="labCards">
+    <div class="card lab-card" data-topic="Судың температурасы қанттың еру жылдамдығына әсер ете ме?"><div class="icon">🔍</div><div class="label">Зерттеушілер</div></div>
+    <div class="card lab-card" data-topic="Жарық өсімдіктің өсуіне әсер ете ме?"><div class="icon">🧪</div><div class="label">Ғалымдар</div></div>
+    <div class="card lab-card" data-topic="Қағаз ұшақтың қанатының көлемі оның ұшу қашықтығына әсер ете ме?"><div class="icon">💡</div><div class="label">Өнертапқыштар</div></div>
+    <div class="card lab-card" data-topic="Жел судың булану жылдамдығына әсер ете ме?"><div class="icon">🧠</div><div class="label">Сарапшылар</div></div>
+  </div>
+  <p id="labTopicText" style="font-weight:800; font-size:18px; min-height:26px; margin:14px 0;"></p>
+  <p style="font-weight:800;">⏱️ Уақыз: 10 минут</p>
+  <div class="big-timer" id="labTimerDisplay">10:00</div>
+  <div style="display:flex; gap:12px; justify-content:center;">
+    <button class="btn green small" id="labStart">Бастау</button>
+    <button class="btn coral small" id="labStop">Тоқтату</button>
+    <button class="btn ghost small" id="labRestart">Қайта бастау</button>
+  </div>
+</section>
+
+<!-- SLIDE 10 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">📋 ЗЕРТТЕУ ПАСПОРТЫ</h1>
+  <div class="cards-row" style="max-width:760px;">
+    <div class="card"><div class="icon">❓</div><div class="label">1. Зерттеу сұрағы</div></div>
+    <div class="card"><div class="icon">💭</div><div class="label">2. Болжам</div></div>
+    <div class="card"><div class="icon">🧪</div><div class="label">3. Қажетті құралдар</div></div>
+    <div class="card"><div class="icon">📝</div><div class="label">4. Зерттеу жоспары</div></div>
+    <div class="card"><div class="icon">⚠️</div><div class="label">5. Қауіпсіздік ережелері</div></div>
+    <div class="card"><div class="icon">📊</div><div class="label">6. Нәтижені қалай анықтаймыз?</div></div>
+    <div class="card"><div class="icon">✅</div><div class="label">7. Қорытынды</div></div>
+  </div>
+  <p style="margin-top:20px; font-weight:800; font-size:19px;">Топпен ақылдас → жоспар құр → қорға!</p>
+</section>
+
+<!-- SLIDE 11 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">⭐ Зерттеу жұмысы қалай бағаланады?</h1>
+  <div class="cards-row">
+    <div class="card"><div class="label">Зерттеу сұрағы</div><div class="icon">⭐</div></div>
+    <div class="card"><div class="label">Болжам</div><div class="icon">⭐</div></div>
+    <div class="card"><div class="label">Құралдар</div><div class="icon">⭐</div></div>
+    <div class="card"><div class="label">Зерттеу реті</div><div class="icon">⭐⭐</div></div>
+    <div class="card"><div class="label">Қауіпсіздік</div><div class="icon">⭐⭐</div></div>
+    <div class="card"><div class="label">Нәтижені анықтау</div><div class="icon">⭐</div></div>
+  </div>
+  <p style="margin-top:24px; font-weight:900; font-size:28px; color:var(--blue-dark);">БАРЛЫҒЫ: ⭐ 8 ҰПАЙ</p>
+</section>
+
+<!-- SLIDE 12 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">🚨 ҚАУІПТІ МЕ, ҚАУІПСІЗ БЕ?</h1>
+  <p class="slide-sub">Қауіпсіз болса — 👍 &nbsp; Қауіпті болса — ❌</p>
+  <div class="card" style="min-width:320px;">
+    <p id="caseText" style="font-weight:800; font-size:20px;"></p>
+    <div class="judge-icon" id="caseIcon" style="display:none;"></div>
+    <button class="btn" id="caseRevealBtn">Жауабын көрсету</button>
+  </div>
+  <div style="margin-top:16px; display:flex; gap:12px;">
+    <button class="btn ghost small" id="casePrev">← Алдыңғы жағдай</button>
+    <button class="btn ghost small" id="caseNext">Келесі жағдай →</button>
+  </div>
+  <p id="caseCounter" style="font-weight:700; color:var(--ink-soft); margin-top:6px;"></p>
+</section>
+
+<!-- SLIDE 13 -->
+<section class="slide" data-slide>
+  <div class="emoji-huge">🏆</div>
+  <h1 class="slide-title">ЗЕРТХАНА ЧЕМПИОНДАРЫ</h1>
+  <p class="slide-sub">Білімдеріңді сынауға дайынсыңдар ма?</p>
+  <button class="btn yellow" id="startGameBtn">🚀 ОЙЫНДЫ БАСТАУ</button>
+</section>
+
+<!-- SLIDE 14 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title" style="font-size:clamp(22px,3vw,36px);">🏆 Зертхана чемпиондары — ойын тақтасы</h1>
+  <div class="board" id="jeopardyBoard"></div>
+  <p style="font-size:13px; color:var(--ink-soft); margin-top:10px; font-weight:700;">Ұпай карточкасын басыңыз</p>
+</section>
+
+<!-- SLIDE 15 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">🔥 ФИНАЛДЫҚ СЫН</h1>
+  <p class="slide-sub">Зерттеу кезеңдерін дұрыс ретпен орналастыр.</p>
+  <div class="order-list" id="orderList2"></div>
+  <div style="display:flex; gap:14px; margin-top:10px;">
+    <button class="btn green" id="checkOrder2">Тексеру</button>
+    <button class="btn ghost" id="resetOrder2">Қайта бастау</button>
+  </div>
+  <div id="orderFeedback2"></div>
+</section>
+
+<!-- SLIDE 16 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">🏆 ЗЕРТХАНА ЧЕМПИОНДАРЫ</h1>
+  <div class="cards-row" id="winnerGrid"></div>
+  <p id="winnerText" style="font-weight:900; font-size:26px; color:var(--blue-dark); margin-top:20px;"></p>
+</section>
+
+<!-- SLIDE 17 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">🚦 ЗЕРТТЕУШІ БАҒДАРШАМЫ</h1>
+  <p style="font-size:14px;color:var(--ink-soft);font-weight:700;">Әр оқушы шығып, өз түсін бассын — таңдаған сайын саны артады.</p>
+  <div class="cards-row" id="trafficCards">
+    <div class="card traffic-card" data-c="green"><div class="icon">🟢</div><div class="label">Мен зерттеу жоспарын өзім құрастыра аламын!</div><div class="traffic-count" id="count-green">0 рет</div></div>
+    <div class="card traffic-card" data-c="yellow"><div class="icon">🟡</div><div class="label">Маған аздап көмек қажет.</div><div class="traffic-count" id="count-yellow">0 рет</div></div>
+    <div class="card traffic-card" data-c="red"><div class="icon">🔴</div><div class="label">Маған тақырыпты тағы түсіндіру қажет.</div><div class="traffic-count" id="count-red">0 рет</div></div>
+  </div>
+  <button class="btn ghost small" id="resetTrafficBtn" style="margin-top:8px;">Санақты тазалау</button>
+  <p style="margin-top:26px; font-weight:800; font-size:20px;">Нағыз зерттеуші зерттеуді неден бастайды?</p>
+  <button class="btn" id="finalRevealBtn">Жауабын көрсету</button>
+  <div id="finalAnswer" style="display:none; margin-top:14px; font-weight:900; font-size:22px; color:var(--blue-dark);">🔬 ЗЕРТТЕУ ЖОСПАРЫН ҚҰРУДАН!</div>
+</section>
+
+<!-- SLIDE 18 -->
+<section class="slide" data-slide>
+  <h1 class="slide-title">🏠 ҮЙДЕГІ ЖАС ЗЕРТТЕУШІ</h1>
+  <p class="slide-sub">Үй жағдайында қауіпсіз орындауға болатын бір зерттеу ойлап тап.</p>
+  <div class="checklist">
+    <label><input type="checkbox"> Зерттеу сұрағы</label>
+    <label><input type="checkbox"> Болжам</label>
+    <label><input type="checkbox"> Қажетті құралдар</label>
+    <label><input type="checkbox"> Зерттеу қадамдары</label>
+    <label><input type="checkbox"> Қауіпсіздік ережелері</label>
+    <label><input type="checkbox"> Күтілетін нәтиже</label>
+  </div>
+  <p style="margin-top:16px; font-weight:800; color:#C94040; background:#FFECEC; padding:12px 20px; border-radius:16px; max-width:520px;">⚠️ Отпен, электр құралдарымен және белгісіз химиялық заттармен тәжірибе жүргізбе!</p>
+  <p style="margin-top:16px; font-weight:900; font-size:22px;">🌟 Бүгін сен нағыз зерттеуші болдың!</p>
+</section>
+
+</div><!-- /app -->
+
+<div class="toolbar" style="display:none;"></div>
+
+<button class="nav-arrow" id="prevBtn">←</button>
+<button class="nav-arrow" id="nextBtn">→</button>
+<div class="bottom-bar">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="slide-counter" id="slideCounter">1 / 18</div>
+</div>
+
+<!-- generic modal -->
+<div class="modal-overlay" id="genericModal">
+  <div class="modal-box" id="genericModalBox"></div>
+</div>
+
+<script>
+/* ============ STATE ============ */
+const TEAM_NAMES = ["ЗЕРТТЕУШІЛЕР","ҒАЛЫМДАР","ӨНЕРТАПҚЫШТАР","САРАПШЫЛАР"];
+const TEAM_ICONS = ["🔍","🧪","💡","🧠"];
+
+function loadScores(){
+  try{
+    const raw = localStorage.getItem('teamScores');
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {0:0,1:0,2:0,3:0};
+}
+function saveScores(s){ try{ localStorage.setItem('teamScores', JSON.stringify(s)); }catch(e){} }
+let scores = loadScores();
+
+function loadJeopardyUsed(){
+  try{ const raw = localStorage.getItem('jeopardyUsed'); if(raw) return JSON.parse(raw); }catch(e){}
+  return {};
+}
+function saveJeopardyUsed(u){ try{ localStorage.setItem('jeopardyUsed', JSON.stringify(u)); }catch(e){} }
+let jeopardyUsed = loadJeopardyUsed();
+
+/* ============ SLIDES / NAV ============ */
+const slides = Array.from(document.querySelectorAll('[data-slide]'));
+let current = 0;
+
+function showSlide(i){
+  if(i<0) i=0;
+  if(i>slides.length-1) i=slides.length-1;
+  slides[current].classList.remove('active');
+  current = i;
+  slides[current].classList.add('active');
+  document.getElementById('progressFill').style.width = ((current+1)/slides.length*100)+'%';
+  document.getElementById('slideCounter').textContent = (current+1)+' / '+slides.length;
+  document.getElementById('prevBtn').style.visibility = current===0 ? 'hidden':'visible';
+  document.getElementById('nextBtn').style.visibility = current===slides.length-1 ? 'hidden':'visible';
+  window.scrollTo(0,0);
+}
+document.getElementById('prevBtn').addEventListener('click',()=>showSlide(current-1));
+document.getElementById('nextBtn').addEventListener('click',()=>showSlide(current+1));
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight') showSlide(current+1);
+  if(e.key==='ArrowLeft') showSlide(current-1);
+});
+document.querySelectorAll('.go-next').forEach(b=>b.addEventListener('click',()=>showSlide(current+1)));
+
+/* ============ FULLSCREEN ============ */
+document.getElementById('fsBtn').addEventListener('click', ()=>{
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  }else{
+    document.exitFullscreen().catch(()=>{});
+  }
+});
+
+/* ============ TEAMS (slide 3) ============ */
+function renderTeams(){
+  const grid = document.getElementById('teamsGrid');
+  grid.innerHTML = '';
+  TEAM_NAMES.forEach((name,i)=>{
+    const div = document.createElement('div');
+    div.className='team-card';
+    div.innerHTML = `
+      <div class="icon">${TEAM_ICONS[i]}</div>
+      <div class="name">${name}</div>
+      <div class="score">⭐ <span id="score-${i}">${scores[i]||0}</span></div>
+      <div class="score-btns">
+        <button class="minus" data-i="${i}" data-d="-1">−</button>
+        <button class="plus" data-i="${i}" data-d="1">+</button>
+      </div>`;
+    grid.appendChild(div);
+  });
+  grid.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const i = btn.dataset.i, d = parseInt(btn.dataset.d);
+      changeScore(i,d);
+    });
+  });
+}
+function changeScore(i,d){
+  scores[i] = (scores[i]||0) + d;
+  if(scores[i]<0) scores[i]=0;
+  saveScores(scores);
+  const el = document.getElementById('score-'+i);
+  if(el) el.textContent = scores[i];
+  updateScorePanel();
+}
+document.getElementById('clearScoresBtn').addEventListener('click', ()=>{
+  openConfirm('Барлық ұпайларды тазалау керек пе?', ()=>{
+    scores = {0:0,1:0,2:0,3:0};
+    saveScores(scores);
+    renderTeams();
+    updateScorePanel();
+  });
+});
+renderTeams();
+
+/* generic confirm modal */
+function openConfirm(text, onYes){
+  const box = document.getElementById('genericModalBox');
+  box.innerHTML = `<h2>${text}</h2>
+    <div class="modal-actions">
+      <button class="btn coral" id="cfYes">Иә, тазалау</button>
+      <button class="btn ghost" id="cfNo">Жоқ</button>
+    </div>`;
+  document.getElementById('genericModal').classList.add('show');
+  document.getElementById('cfYes').onclick = ()=>{ closeModal(); onYes(); };
+  document.getElementById('cfNo').onclick = closeModal;
+}
+function closeModal(){ document.getElementById('genericModal').classList.remove('show'); }
+document.getElementById('genericModal').addEventListener('click', e=>{
+  if(e.target.id==='genericModal') closeModal();
+});
+
+/* ============ SLIDE 4: guess ============ */
+document.getElementById('guessWarm').addEventListener('click',()=>showGuessFeedback());
+document.getElementById('guessCold').addEventListener('click',()=>showGuessFeedback());
+function showGuessFeedback(){
+  document.getElementById('guessFeedback').innerHTML =
+    `<div class="feedback correct" style="margin-top:16px;">Бұл — сенің БОЛЖАМЫҢ! 💭<br>Енді оны зерттеу арқылы тексерейік.</div>`;
+}
+
+/* ============ SLIDE 5 ============ */
+observeSlide5();
+function observeSlide5(){
+  const s5 = slides[4];
+  const obs = new MutationObserver(()=>{
+    if(s5.classList.contains('active')){
+      setTimeout(()=>{ const t=document.getElementById('s5think'); if(t) t.style.opacity=1; }, 900);
+    }
+  });
+  obs.observe(s5, {attributes:true, attributeFilter:['class']});
+}
+document.getElementById('s5videoBtn').addEventListener('click', ()=>showSlide(5));
+
+/* ============ SLIDE 7: timeline ============ */
+let timelineStep = 0;
+const timelineSteps = document.querySelectorAll('#timelineList .step');
+document.getElementById('timelineNextBtn').addEventListener('click', ()=>{
+  if(timelineStep < timelineSteps.length){
+    timelineSteps[timelineStep].classList.add('show');
+    timelineStep++;
+  }
+  if(timelineStep>=timelineSteps.length){
+    document.getElementById('timelineNextBtn').textContent = 'Барлығы ашылды ✅';
+    document.getElementById('timelineNextBtn').disabled = true;
+  }
+});
+
+/* ============ ORDER / DRAG SLIDES (8 & 15) ============ */
+const CORRECT_ORDER = ["Зерттеу сұрағы","Болжам","Құралдар","Зерттеу жоспары","Қауіпсіздік","Нәтиже","Қорытынды"];
+const SHUFFLED_1 = ["Қорытынды","Құралдар","Болжам","Зерттеу сұрағы","Қауіпсіздік","Нәтиже","Зерттеу жоспары"];
+const SHUFFLED_2 = ["Нәтиже","Зерттеу сұрағы","Қорытынды","Қауіпсіздік","Болжам","Зерттеу жоспары","Құралдар"];
+
+function buildOrderList(containerId, items){
+  const container = document.getElementById(containerId);
+  container.innerHTML='';
+  items.forEach(text=>{
+    const div = document.createElement('div');
+    div.className='order-item';
+    div.draggable = true;
+    div.textContent = text;
+    div.dataset.text = text;
+    attachOrderHandlers(div, container);
+    container.appendChild(div);
+  });
+}
+let selectedItem = null;
+function attachOrderHandlers(div, container){
+  div.addEventListener('click', ()=>{
+    if(!selectedItem){
+      selectedItem = div;
+      div.classList.add('selected');
+    } else if(selectedItem === div){
+      div.classList.remove('selected');
+      selectedItem = null;
+    } else {
+      swapNodes(selectedItem, div);
+      selectedItem.classList.remove('selected');
+      selectedItem = null;
+    }
+  });
+  div.addEventListener('dragstart', e=>{
+    e.dataTransfer.setData('text/plain','');
+    div._dragging = true;
+    setTimeout(()=>div.style.opacity='0.4',0);
+  });
+  div.addEventListener('dragend', ()=>{ div.style.opacity='1'; });
+  div.addEventListener('dragover', e=>e.preventDefault());
+  div.addEventListener('drop', e=>{
+    e.preventDefault();
+    const dragged = container.querySelector('[style*="opacity: 0.4"]');
+    if(dragged && dragged!==div) swapNodes(dragged, div);
+  });
+}
+function swapNodes(a,b){
+  const aNext = a.nextSibling===b ? a : a.nextSibling;
+  b.parentNode.insertBefore(a,b);
+  b.parentNode.insertBefore(b,aNext);
+}
+function checkOrder(containerId, feedbackId, rewardPoints, onSuccess){
+  const items = Array.from(document.getElementById(containerId).children).map(c=>c.dataset.text);
+  const fb = document.getElementById(feedbackId);
+  const ok = items.every((t,i)=>t===CORRECT_ORDER[i]);
+  if(ok){
+    fb.innerHTML = `<div class="feedback correct">🎉 КЕРЕМЕТ! Зерттеу алгоритмі дұрыс! +${rewardPoints} ұпай</div>`;
+    if(onSuccess) onSuccess();
+  } else {
+    fb.innerHTML = `<div class="feedback wrong">🤔 Тағы бір ойланып көр!</div>`;
+  }
+}
+buildOrderList('orderList1', SHUFFLED_1);
+buildOrderList('orderList2', SHUFFLED_2);
+document.getElementById('checkOrder1').addEventListener('click', ()=>{
+  checkOrder('orderList1','orderFeedback1',2);
+});
+document.getElementById('resetOrder1').addEventListener('click', ()=>{
+  buildOrderList('orderList1', SHUFFLED_1);
+  document.getElementById('orderFeedback1').innerHTML='';
+});
+document.getElementById('checkOrder2').addEventListener('click', ()=>{
+  checkOrder('orderList2','orderFeedback2',30, launchConfetti);
+});
+document.getElementById('resetOrder2').addEventListener('click', ()=>{
+  buildOrderList('orderList2', SHUFFLED_2);
+  document.getElementById('orderFeedback2').innerHTML='';
+});
+
+/* ============ SLIDE 9: lab cards + timer ============ */
+document.querySelectorAll('.lab-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    document.querySelectorAll('.lab-card').forEach(c=>c.classList.remove('active'));
+    card.classList.add('active');
+    document.getElementById('labTopicText').textContent = '❓ '+card.dataset.topic;
+  });
+});
+let labSeconds = 600;
+let labInterval = null;
+function renderLabTimer(){
+  const m = Math.floor(labSeconds/60).toString().padStart(2,'0');
+  const s = (labSeconds%60).toString().padStart(2,'0');
+  document.getElementById('labTimerDisplay').textContent = m+':'+s;
+}
+document.getElementById('labStart').addEventListener('click', ()=>{
+  if(labInterval) return;
+  labInterval = setInterval(()=>{
+    if(labSeconds>0){ labSeconds--; renderLabTimer(); }
+    else { clearInterval(labInterval); labInterval=null; showTimeUp(); }
+  },1000);
+});
+document.getElementById('labStop').addEventListener('click', ()=>{
+  clearInterval(labInterval); labInterval=null;
+});
+document.getElementById('labRestart').addEventListener('click', ()=>{
+  clearInterval(labInterval); labInterval=null; labSeconds=600; renderLabTimer();
+});
+renderLabTimer();
+
+/* ============ SLIDE 12: safe/danger ============ */
+const cases = [
+  {text:"Белгісіз сұйықтықтың дәмін тату", safe:false},
+  {text:"Қорғаныш көзілдірігін кию", safe:true},
+  {text:"Зертханада жүгіру", safe:false},
+  {text:"Ыстық ыдысты арнайы қолғаппен ұстау", safe:true},
+  {text:"Мұғалімнің нұсқауын орындау", safe:true},
+  {text:"Тәжірибеден кейін жұмыс орнын жинау", safe:true}
+];
+let caseIndex = 0;
+function renderCase(){
+  const c = cases[caseIndex];
+  document.getElementById('caseText').textContent = c.text;
+  const icon = document.getElementById('caseIcon');
+  icon.style.display='none';
+  icon.textContent='';
+  document.getElementById('caseCounter').textContent = (caseIndex+1)+' / '+cases.length;
+}
+document.getElementById('caseRevealBtn').addEventListener('click', ()=>{
+  const c = cases[caseIndex];
+  const icon = document.getElementById('caseIcon');
+  icon.textContent = c.safe ? '✅ ҚАУІПСІЗ' : '❌ ҚАУІПТІ';
+  icon.style.fontSize='28px';
+  icon.style.fontWeight='900';
+  icon.style.color = c.safe ? '#1D8A63' : '#C94040';
+  icon.style.display='block';
+});
+document.getElementById('caseNext').addEventListener('click', ()=>{
+  caseIndex = (caseIndex+1)%cases.length; renderCase();
+});
+document.getElementById('casePrev').addEventListener('click', ()=>{
+  caseIndex = (caseIndex-1+cases.length)%cases.length; renderCase();
+});
+renderCase();
+
+/* ============ SLIDE 13/14: Jeopardy ============ */
+document.getElementById('startGameBtn').addEventListener('click', ()=>showSlide(13));
+
+const jeopardyData = {
+  "ЗЕРТТЕУ": {
+    10: {q:"Зерттеу жүргізудің бірінші қадамы қандай?", a:"Зерттеу сұрағын анықтау."},
+    20: {q:"Дұрыс ретті анықта:\nҚорытынды → Зерттеу сұрағы → Зерттеу жүргізу → Болжам", a:"Зерттеу сұрағы → Болжам → Зерттеу жүргізу → Қорытынды."}
+  },
+  "БОЛЖАМ": {
+    10: {q:"Болжам дегеніміз не?", a:"Зерттеу нәтижесі туралы алдын ала жасалған жорамал."},
+    20: {q:"Сөйлемді аяқта:\nМенің ойымша, жылы суда қант ______ ериді.", a:"Тезірек."}
+  },
+  "ҚҰРАЛДАР": {
+    10: {q:"Өсімдіктің биіктігін өлшеу үшін қай құрал қажет?\nA) таразы  Ә) сызғыш  Б) термометр", a:"Ә) Сызғыш."},
+    20: {q:"Судың температурасын қандай құралмен өлшейміз?", a:"Термометр."}
+  },
+  "ҚАУІПСІЗДІК": {
+    10: {q:"Белгісіз заттың дәмін көруге болады. Дұрыс па, бұрыс па?", a:"Бұрыс. Белгісіз заттың дәмін татуға болмайды."},
+    20: {q:"Оқушы ыстық ыдысты жалаң қолмен ұстамақ болды. Оның қатесі қандай?", a:"Ыстық затты жалаң қолмен ұстауға болмайды. Арнайы қолғап немесе қауіпсіз құрал пайдалану керек."}
+  },
+  "СУПЕР СҰРАҚ": {
+    20: {q:"Судың температурасы қанттың еру жылдамдығына қалай әсер етеді? 30 секунд ішінде:\n1 болжам, 3 қажетті құрал, 1 қауіпсіздік ережесін ата.", a:"Ашық жауап — мұғалім бағалайды. Үлгі: жылы суда тезірек ериді; термометр, стақан, қасық; ыстық суды абайлап ұстау."},
+    30: {q:"Зерттеушінің барлық қадамдарын дұрыс ретпен ата.", a:"Зерттеу сұрағы → Болжам → Құралдар → Зерттеу жоспары → Қауіпсіздік → Нәтиже → Қорытынды."}
+  }
+};
+const categoryOrder = ["ЗЕРТТЕУ","БОЛЖАМ","ҚҰРАЛДАР","ҚАУІПСІЗДІК","СУПЕР СҰРАҚ"];
+
+function renderBoard(){
+  const board = document.getElementById('jeopardyBoard');
+  board.innerHTML='';
+  categoryOrder.forEach(cat=>{
+    const col = document.createElement('div');
+    const head = document.createElement('div');
+    head.className='cat-head';
+    head.textContent = cat;
+    col.appendChild(head);
+    Object.keys(jeopardyData[cat]).forEach(val=>{
+      const key = cat+'-'+val;
+      const cell = document.createElement('div');
+      cell.className='val-cell'+(jeopardyUsed[key]?' used':'');
+      cell.textContent = jeopardyUsed[key] ? '' : val;
+      if(!jeopardyUsed[key]){
+        cell.addEventListener('click', ()=>openJeopardyModal(cat,val,key));
+      }
+      col.appendChild(cell);
+    });
+    board.appendChild(col);
+  });
+}
+function openJeopardyModal(cat,val,key){
+  const item = jeopardyData[cat][val];
+  const box = document.getElementById('genericModalBox');
+  box.className='modal-box jeop-modal';
+  box.innerHTML = `
+    <h2>${cat} — ${val}</h2>
+    <div class="prompt">${item.q}</div>
+    <button class="btn" id="showAnsBtn">Жауабын көрсету</button>
+    <div class="answer" id="jeopAnswer">${item.a}</div>
+    <div class="team-pick" id="teamPick" style="display:none;"></div>
+    <div class="modal-actions"><button class="btn ghost" id="jeopClose">Жабу</button></div>
+  `;
+  document.getElementById('genericModal').classList.add('show');
+  document.getElementById('showAnsBtn').onclick = ()=>{
+    document.getElementById('jeopAnswer').classList.add('show');
+    const pick = document.getElementById('teamPick');
+    pick.style.display='flex';
+    pick.innerHTML='<div style="width:100%;font-weight:800;margin-bottom:6px;">Дұрыс жауап берген команда:</div>'+
+      TEAM_NAMES.map((n,i)=>`<button class="btn small green" data-i="${i}">${TEAM_ICONS[i]} ${n} +${val}</button>`).join('');
+    pick.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        changeScore(b.dataset.i, parseInt(val));
+        jeopardyUsed[key]=true;
+        saveJeopardyUsed(jeopardyUsed);
+        renderBoard();
+        closeModal();
+      });
+    });
+  };
+  document.getElementById('jeopClose').onclick = ()=>{
+    jeopardyUsed[key]=true;
+    saveJeopardyUsed(jeopardyUsed);
+    renderBoard();
+    closeModal();
+  };
+}
+renderBoard();
+
+/* ============ CONFETTI ============ */
+function launchConfetti(){
+  const colors = ['#4E8FEA','#4FD69C','#FFC94A','#A78BFA','#FF8B6A'];
+  for(let i=0;i<60;i++){
+    const p = document.createElement('div');
+    p.className='confetti-piece';
+    p.style.left = Math.random()*100+'vw';
+    p.style.width = (6+Math.random()*6)+'px';
+    p.style.height = (6+Math.random()*10)+'px';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(p);
+    const duration = 2200+Math.random()*1800;
+    p.animate([
+      {transform:`translateY(0) rotate(0deg)`, opacity:1},
+      {transform:`translateY(100vh) rotate(${360+Math.random()*360}deg)`, opacity:0.9}
+    ],{duration, easing:'ease-in'});
+    setTimeout(()=>p.remove(), duration+50);
+  }
+}
+
+/* ============ SLIDE 16: winner ============ */
+function renderWinner(){
+  const grid = document.getElementById('winnerGrid');
+  const max = Math.max(...TEAM_NAMES.map((_,i)=>scores[i]||0));
+  grid.innerHTML='';
+  TEAM_NAMES.forEach((name,i)=>{
+    const isWinner = (scores[i]||0)===max && max>0;
+    const div = document.createElement('div');
+    div.className = 'card team-card'+(isWinner?' winner-card':'');
+    div.innerHTML = `<div class="icon">${TEAM_ICONS[i]}</div><div class="name">${name}</div><div class="score">⭐ ${scores[i]||0}</div>${isWinner?'<div style="font-size:26px;">🏆</div>':''}`;
+    grid.appendChild(div);
+  });
+  document.getElementById('winnerText').textContent = max>0 ? 'ҚҰТТЫҚТАЙМЫЗ!' : 'Ұпайлар әлі жиналған жоқ';
+  if(max>0) launchConfetti();
+}
+/* trigger winner render when its slide becomes active */
+const winnerSlide = slides[15];
+new MutationObserver(()=>{ if(winnerSlide.classList.contains('active')) renderWinner(); })
+  .observe(winnerSlide,{attributes:true, attributeFilter:['class']});
+
+/* ============ SLIDE 17: traffic + reveal ============ */
+function loadTrafficCounts(){
+  try{ const raw = localStorage.getItem('trafficCounts'); if(raw) return JSON.parse(raw); }catch(e){}
+  return {green:0, yellow:0, red:0};
+}
+function saveTrafficCounts(c){ try{ localStorage.setItem('trafficCounts', JSON.stringify(c)); }catch(e){} }
+let trafficCounts = loadTrafficCounts();
+function renderTrafficCounts(){
+  ['green','yellow','red'].forEach(c=>{
+    const el = document.getElementById('count-'+c);
+    if(el) el.textContent = (trafficCounts[c]||0) + ' рет';
+  });
+}
+document.querySelectorAll('.traffic-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    card.style.transform='scale(1.05)';
+    setTimeout(()=>card.style.transform='', 200);
+    const c = card.dataset.c;
+    trafficCounts[c] = (trafficCounts[c]||0) + 1;
+    saveTrafficCounts(trafficCounts);
+    renderTrafficCounts();
+  });
+});
+document.getElementById('resetTrafficBtn').addEventListener('click', ()=>{
+  openConfirm('Барлық санақты тазалау керек пе?', ()=>{
+    trafficCounts = {green:0, yellow:0, red:0};
+    saveTrafficCounts(trafficCounts);
+    renderTrafficCounts();
+  });
+});
+renderTrafficCounts();
+document.getElementById('finalRevealBtn').addEventListener('click', ()=>{
+  document.getElementById('finalAnswer').style.display='block';
+});
+
+/* ============ TOOLBAR: TIMER ============ */
+let toolTimerInterval=null, toolTimerSeconds=0;
+document.getElementById('timerToolBtn').addEventListener('click', openTimerPicker);
+function openTimerPicker(){
+  const box = document.getElementById('genericModalBox');
+  box.className='modal-box';
+  box.innerHTML = `
+    <h2>⏱ Таймерді таңда</h2>
+    <div class="modal-actions">
+      <button class="btn small" data-sec="30">30 секунд</button>
+      <button class="btn small" data-sec="60">1 минут</button>
+      <button class="btn small" data-sec="180">3 минут</button>
+      <button class="btn small" data-sec="300">5 минут</button>
+      <button class="btn small" data-sec="600">10 минут</button>
+    </div>
+  `;
+  document.getElementById('genericModal').classList.add('show');
+  box.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      closeModal();
+      startFloatingTimer(parseInt(b.dataset.sec));
+    });
+  });
+}
+let floatingTimerEl = null;
+function startFloatingTimer(sec){
+  if(floatingTimerEl) floatingTimerEl.remove();
+  clearInterval(toolTimerInterval);
+  toolTimerSeconds = sec;
+  floatingTimerEl = document.createElement('div');
+  floatingTimerEl.style.cssText='position:fixed; top:76px; right:18px; background:#fff; border-radius:20px; box-shadow:0 10px 30px rgba(46,111,209,.2); padding:14px 20px; z-index:700; font-weight:900; font-size:20px; color:var(--blue-dark);';
+  document.body.appendChild(floatingTimerEl);
+  renderFloatingTimer();
+  toolTimerInterval = setInterval(()=>{
+    toolTimerSeconds--;
+    if(toolTimerSeconds<=0){
+      clearInterval(toolTimerInterval);
+      floatingTimerEl.remove();
+      showTimeUp();
+      return;
+    }
+    renderFloatingTimer();
+  },1000);
+}
+function renderFloatingTimer(){
+  const m = Math.floor(toolTimerSeconds/60).toString().padStart(2,'0');
+  const s = (toolTimerSeconds%60).toString().padStart(2,'0');
+  floatingTimerEl.textContent = '⏱ '+m+':'+s;
+}
+function showTimeUp(){
+  const box = document.getElementById('genericModalBox');
+  box.className='modal-box';
+  box.innerHTML = `<h2>⏰ Уақыт аяқталды!</h2><div class="modal-actions"><button class="btn" id="timeUpOk">Жарайды</button></div>`;
+  document.getElementById('genericModal').classList.add('show');
+  document.getElementById('timeUpOk').onclick = closeModal;
+}
+
+/* ============ TOOLBAR: SCORE PANEL ============ */
+let scorePanelEl = null;
+document.getElementById('scoreToolBtn').addEventListener('click', ()=>{
+  if(scorePanelEl){ scorePanelEl.remove(); scorePanelEl=null; return; }
+  scorePanelEl = document.createElement('div');
+  scorePanelEl.style.cssText='position:fixed; top:76px; right:18px; background:#fff; border-radius:20px; box-shadow:0 10px 30px rgba(46,111,209,.2); padding:16px 20px; z-index:700; min-width:200px;';
+  document.body.appendChild(scorePanelEl);
+  updateScorePanel();
+});
+function updateScorePanel(){
+  if(!scorePanelEl) return;
+  scorePanelEl.innerHTML = '<div style="font-weight:900; margin-bottom:8px;">⭐ Ұпайлар</div>'+
+    TEAM_NAMES.map((n,i)=>`<div style="display:flex; justify-content:space-between; gap:12px; font-weight:700; padding:4px 0;">${TEAM_ICONS[i]} ${n}<span>${scores[i]||0}</span></div>`).join('');
+}
+
+/* ============ TOOLBAR: RATE TEAMS ============ */
+document.getElementById('rateToolBtn').addEventListener('click', openRateModal);
+function openRateModal(){
+  const box = document.getElementById('genericModalBox');
+  box.className='modal-box';
+  box.innerHTML = `<h2>🏅 Топтарды бағалау</h2><div id="rateGrid" style="display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-top:12px;"></div>
+    <div class="modal-actions"><button class="btn ghost" id="rateClose">Жабу</button></div>`;
+  document.getElementById('genericModal').classList.add('show');
+  renderRateGrid();
+  document.getElementById('rateClose').onclick = closeModal;
+}
+function renderRateGrid(){
+  const grid = document.getElementById('rateGrid');
+  if(!grid) return;
+  grid.innerHTML = TEAM_NAMES.map((name,i)=>`
+    <div class="team-card" style="min-width:150px;">
+      <div class="icon">${TEAM_ICONS[i]}</div>
+      <div class="name">${name}</div>
+      <div class="score">⭐ <span id="rate-score-${i}">${scores[i]||0}</span></div>
+      <div class="score-btns">
+        <button class="minus" data-i="${i}" data-d="-1">−</button>
+        <button class="plus" data-i="${i}" data-d="1">+</button>
+      </div>
+    </div>`).join('');
+  grid.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const i = btn.dataset.i, d = parseInt(btn.dataset.d);
+      changeScore(i,d);
+      const el = document.getElementById('rate-score-'+i);
+      if(el) el.textContent = scores[i];
+    });
+  });
+}
+
+/* ============ TOOLBAR: RESET ============ */
+document.getElementById('resetToolBtn').addEventListener('click', ()=>{
+  openConfirm('Барлық ұпайлар мен ойын нәтижелерін өшіруге сенімдісіз бе?', ()=>{
+    scores = {0:0,1:0,2:0,3:0};
+    jeopardyUsed = {};
+    trafficCounts = {green:0, yellow:0, red:0};
+    saveScores(scores); saveJeopardyUsed(jeopardyUsed); saveTrafficCounts(trafficCounts);
+    renderTeams(); renderBoard(); updateScorePanel(); renderTrafficCounts();
+  });
+});
+
+/* ============ INIT ============ */
+showSlide(0);
+</script>
+</body>
+</html>
